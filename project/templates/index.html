@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Sentiment Analyzer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Sentiment Analyzer</h1>
+    <textarea id="inputText" placeholder="Enter your sentence or paragraph..."></textarea>
+    <button onclick="analyzeSentiment()">Analyze</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    async function analyzeSentiment() {
+      const input = document.getElementById("inputText").value;
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = "⏳ Analyzing...";
+
+      try {
+        const response = await fetch("/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: input })
+        });
+
+        const data = await response.json();
+
+        if (data.result) {
+          outputDiv.innerHTML = `<pre>${data.result}</pre>`;
+        } else if (data.error) {
+          outputDiv.innerHTML = `<span style="color: red;">⚠️ ${data.error}</span>`;
+        } else {
+          outputDiv.innerHTML = `<span style="color: red;">❌ Unknown error occurred.</span>`;
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        outputDiv.innerHTML = `<span style="color: red;">❌ Unexpected error occurred.</span>`;
+      }
+    }
+  </script>
+</body>
+</html>
